@@ -1,0 +1,16 @@
+*.p1
+*.d
+*.pre
+*.cmf
+*.elf
+*.hex
+*.hxl
+*.st
+*.map
+*.mum
+*.obj
+*.rlf
+*.sdb
+*.sym
+*.mk
+*.properties
