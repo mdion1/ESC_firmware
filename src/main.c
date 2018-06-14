@@ -13,7 +13,8 @@ int main()
     init_PWM();
     init_comparator();
     initMotorState();
-    void init_event_timer();
+    init_event_timer();   
+    
     while(true)
     {
         checkSPIbus();
@@ -34,5 +35,6 @@ void checkSPIbus()
             KILLSWITCH();
             MotorState.status = STANDBY;
         }
+        MotorState.SPIdataFlag = true;
     }
 }

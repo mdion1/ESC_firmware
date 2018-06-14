@@ -1,6 +1,7 @@
 #include "ESC_logic.h"
 
 motor_state_t MotorState;
+uint16_t commutationTable[256];
 
 void initMotorState()
 {
@@ -9,6 +10,12 @@ void initMotorState()
     MotorState.isCommutationTimerOn = false;
     MotorState.isComparatorPhaseNext = false;
     MotorState.status = STANDBY;
+    
+    int i;
+    for (i = 0; i < 255; i++)
+    {
+        commutationTable[i] = 4096 - 4 * i;
+    }
 }
 
 void MotorStateTasks()
@@ -17,9 +24,19 @@ void MotorStateTasks()
     {
         case STANDBY:
             if (MotorState.duty_cycle != 0)
+            {
                 MotorState.status = STARTUP;
+                init_commutation_timer(commutationTable[MotorState.duty_cycle], TIMER_DIV_8);
+                start_commutation_timer(true);
+            }
             break;
         case STARTUP:
+            if (MotorState.SPIdataFlag)
+            {
+                init_commutation_timer(commutationTable[MotorState.duty_cycle], TIMER_DIV_8);
+                start_commutation_timer(true);
+                MotorState.SPIdataFlag = false;
+            }
             break;
         case STALL:
             break;
@@ -30,6 +47,7 @@ void MotorStateTasks()
     }
 }
 
+//uint8_t commutationTimingTableA[255];
 
 #ifndef CCW_OPERATION
 
@@ -85,8 +103,8 @@ void commutate()
         case 4:
         {
             PHASE_C_HIGH();
-            PHASE_A_LOW();
-            PHASE_B_TRIS();
+            PHASE_B_LOW();
+            PHASE_A_TRIS();
             PWM_ASSIGN_PHASE_C();
             ACMP_ASSIGN_PHASE_A();
             MotorState.phase = 5;

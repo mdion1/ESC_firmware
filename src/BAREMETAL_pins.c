@@ -62,7 +62,7 @@ void init_PWM()
     CCP1CONbits.CCP1MODE = 0b1111;      //enable PWM mode
     CCPTMRSbits.C1TSEL = 0b00;          //select Timer2 as clock source
     CCPR1L = 0;                         //clear the two LSB's of the PWM word (only 8 bits used)
-    CCPR1H = 0;                         //start with a duty cycle of 0;
+    CCPR1H = 32;                         //start with a duty cycle of 0;
     
     /* Configure Timer2 */
     T2CONbits.TMR2ON = 1;
@@ -85,13 +85,17 @@ void enable_cmp_interrupt(bool on)
 void init_spi()
 {
     /* assign pins */
-    SSP1CLKPPS = 0b01111; //assign SCK input
-    SSP1DATPPS = 0b01101;   //assign SDI input
-    SSP1SSPPS =  0b10110; //assign ~SS input
+    SSP1CLKPPS = 0b01111;   //assign SCK input to B7
+    SSP1DATPPS = 0b01101;   //assign SDI input to B5
+    SSP1SSPPS =  0b10110;   //assign ~SS input to C6
+    
+    ANSELBbits.ANSB7 = 0;
+    ANSELBbits.ANSB5 = 0;
+    ANSELCbits.ANSC6 = 0;
 
     /* configure registers */
     SSP1STATbits.SMP = 0;    //must be cleared for slave mode
-    SSP1STATbits.CKE = 0;    //SPI mode 0
+    SSP1STATbits.CKE = 1;    //SPI mode 0 (errata, CKE setting is incorrect)
     SSP1CON1bits.SSPEN = 1;  //enable SPI mode
     SSP1CON1bits.CKP = 0;    //SPI mode 0
     SSP1CON1bits.SSPM = 0b0100;    //SPI slave mode, clock = SCK pin, ~SS pin control enabled

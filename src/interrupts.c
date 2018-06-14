@@ -9,10 +9,11 @@ void interrupt ESC_ISR(void)
     if (PIR1bits.TMR1IF)
     {
         PIR1bits.TMR1IF = 0;    //clear interrupt flag
-        if (MotorState.isComparatorPhaseNext)
-        {
-            
-        }
+        commutate();
+//        if (MotorState.isComparatorPhaseNext)
+//        {
+//            
+//        }
     }
     
     /* Comparator interrupt */

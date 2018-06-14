@@ -16,6 +16,7 @@ typedef struct
     bool isCommutationTimerOn/* = false*/;
     bool isComparatorPhaseNext/* = false*/;
     motorStatus_t status/* = STANDBY*/;
+    bool SPIdataFlag;
 }motor_state_t;
 
 #endif
