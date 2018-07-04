@@ -1,6 +1,9 @@
 #include "BAREMETAL_pins.h"
 #include "ESC_logic.h"
 
+extern motor_state_t MotorState;
+extern uint16_t OpenLoopCommutationTable[256];
+
 void init_pins()
 {
     /* set output pins */
@@ -22,12 +25,15 @@ void init_pins()
     INTCONbits.PEIE = 1;    //enables active peripheral interrupts
 }
 
-void init_commutation_timer(int16_t period, timer_div_t div)
+void init_commutation_timer()
 {
-    T1CONbits.TMR1ON = 0;
-    T1CONbits.T1CKPS = div;
-    TMR1L = (uint8_t) period;
-    TMR1H = (uint8_t)(period >> 8);
+    T1CONbits.T1CKPS = 1;
+}
+
+void reset_commutation_timer(int16_t val)
+{
+    TMR1L = (uint8_t) val;
+    TMR1H = (uint8_t) (val >> 8);
 }
 
 void start_commutation_timer(bool on)
@@ -62,11 +68,16 @@ void init_PWM()
     CCP1CONbits.CCP1MODE = 0b1111;      //enable PWM mode
     CCPTMRSbits.C1TSEL = 0b00;          //select Timer2 as clock source
     CCPR1L = 0;                         //clear the two LSB's of the PWM word (only 8 bits used)
-    CCPR1H = 32;                         //start with a duty cycle of 0;
+    CCPR1H = 48;                         //start with a duty cycle of 0;
     
     /* Configure Timer2 */
     T2CONbits.TMR2ON = 1;
-    PR2 = 255;
+    PR2 = 255;                          //
+}
+
+void set_PWM(uint8_t val)
+{
+    CCPR1H = val;
 }
 
 void init_comparator()

@@ -49,11 +49,13 @@ SS = C6
 typedef enum {TIMER_DIV_1 = 0, TIMER_DIV_2, TIMER_DIV_4, TIMER_DIV_8}timer_div_t;
 
 void init_pins();
-void init_commutation_timer(int16_t period, timer_div_t div);
+void init_commutation_timer();
+void reset_commutation_timer(int16_t val);
 void start_commutation_timer(bool on);
 void init_event_timer();
 bool check_event_timer_overflow();
 void init_PWM();
+void set_PWM(uint8_t val);
 void init_comparator();
 void enable_cmp_interrupt(bool on);
 void init_spi();

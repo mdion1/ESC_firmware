@@ -10,16 +10,15 @@ void interrupt ESC_ISR(void)
     {
         PIR1bits.TMR1IF = 0;    //clear interrupt flag
         commutate();
-//        if (MotorState.isComparatorPhaseNext)
-//        {
-//            
-//        }
+        reset_commutation_timer(MotorState.commutationTimerVal);
     }
     
     /* Comparator interrupt */
     if (PIR2bits.C1IF)
     {
-        PIR2bits.C1IF = 0;      //clear interrupt flag
-        //...
+        PIR2bits.C1IF = 0;                                                              //clear interrupt flag
+        MotorState.closedLoopCtrl.newComparatorCaptureData = (TMR1H << 8) | TMR1L;      //capture the new zero-crossing time
+        reset_commutation_timer(MotorState.commutationTimerVal / 2);                    //reset commutation timer to 1/2 * commutation time
+        MotorState.closedLoopCtrl.newComparatorCaptureDataFlag = true;
     }
 }

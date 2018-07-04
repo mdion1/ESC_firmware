@@ -13,13 +13,13 @@ int main()
     init_PWM();
     init_comparator();
     initMotorState();
-    init_event_timer();   
+    init_event_timer();
+    init_commutation_timer();
     
     while(true)
     {
         checkSPIbus();
-        if (check_event_timer_overflow())
-            MotorStateTasks();
+        MotorStateTasks();
     }
     return 0;
 }
@@ -29,12 +29,11 @@ void checkSPIbus()
     /* Check if buffer is full */
     if (SSP1STATbits.BF)
     {
-        MotorState.duty_cycle = SSP1BUF;
-        if (MotorState.duty_cycle == 0)
+        set_PWM(MotorState.closedLoopCtrl.dutyCycle = SSP1BUF);
+        if (MotorState.closedLoopCtrl.dutyCycle == 0)
         {
             KILLSWITCH();
             MotorState.status = STANDBY;
         }
-        MotorState.SPIdataFlag = true;
     }
 }
