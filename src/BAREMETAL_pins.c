@@ -86,6 +86,16 @@ void init_comparator()
     CM2CON0bits.C2SYNC = 1;    //sync Timer1 with comparator (output updated on the falling edge of Timer1 clock source
     CM2CON1bits.C2PCH = 0;    //set positive input
     CM2CON1bits.C2INTN = 1;   //enable interrupt on falling edge
+    
+    /* debugging only: enable comparator output at C4 (pin 6) */
+    RC4PPS = 0b10111;
+    ANSELCbits.ANSC4 = 0;
+    TRISCbits.TRISC4 = 0;
+    
+    /* debugging alternate: A2 (pin 17) */
+    //RA2PPS = 0b10111;
+    //ANSELAbits.ANSA2 = 0;
+    //TRISAbits.TRISA2 = 0;
 }
 
 void enable_cmp_interrupt(bool on)
