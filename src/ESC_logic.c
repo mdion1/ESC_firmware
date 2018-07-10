@@ -2,270 +2,275 @@
 
 motor_state_t MotorState;
 
-uint16_t OpenLoopCommutationTable[256] = 
+int16_t OpenLoopCommutationTable[256] = 
 {
-    -23141	,
--20439	,
--18302	,
--16570	,
--15137	,
--13932	,
--12905	,
--12019	,
--11247	,
--10568	,
--9966	,
--9429	,
--8947	,
--8512	,
--8117	,
--7758	,
--7428	,
--7126	,
+   -24824	,
+-23220	,
+-21810	,
+-20562	,
+-19449	,
+-18450	,
+-17549	,
+-16732	,
+-15988	,
+-15306	,
+-14681	,
+-14105	,
+-13572	,
+-13078	,
+-12619	,
+-12190	,
+-11790	,
+-11416	,
+-11064	,
+-10734	,
+-10422	,
+-10129	,
+-9851	,
+-9588	,
+-9339	,
+-9102	,
+-8877	,
+-8663	,
+-8459	,
+-8265	,
+-8079	,
+-7901	,
+-7731	,
+-7568	,
+-7412	,
+-7262	,
+-7119	,
+-6980	,
 -6847	,
--6589	,
--6350	,
--6128	,
--5921	,
--5727	,
--5546	,
--5375	,
--5215	,
--5064	,
--4922	,
--4787	,
--4660	,
--4539	,
--4424	,
--4315	,
--4211	,
--4112	,
--4018	,
+-6719	,
+-6596	,
+-6477	,
+-6362	,
+-6252	,
+-6145	,
+-6041	,
+-5941	,
+-5845	,
+-5751	,
+-5661	,
+-5573	,
+-5488	,
+-5405	,
+-5325	,
+-5247	,
+-5172	,
+-5098	,
+-5027	,
+-4958	,
+-4890	,
+-4824	,
+-4761	,
+-4698	,
+-4638	,
+-4579	,
+-4521	,
+-4465	,
+-4410	,
+-4357	,
+-4304	,
+-4253	,
+-4204	,
+-4155	,
+-4108	,
+-4061	,
+-4016	,
+-3971	,
 -3928	,
--3842	,
--3759	,
--3680	,
--3604	,
--3532	,
--3462	,
--3395	,
--3330	,
--3268	,
--3208	,
--3150	,
--3095	,
--3041	,
--2989	,
--2939	,
--2890	,
--2843	,
--2798	,
+-3885	,
+-3844	,
+-3803	,
+-3763	,
+-3724	,
+-3686	,
+-3649	,
+-3612	,
+-3576	,
+-3541	,
+-3506	,
+-3472	,
+-3439	,
+-3407	,
+-3375	,
+-3343	,
+-3312	,
+-3282	,
+-3252	,
+-3223	,
+-3195	,
+-3166	,
+-3139	,
+-3112	,
+-3085	,
+-3059	,
+-3033	,
+-3007	,
+-2982	,
+-2958	,
+-2934	,
+-2910	,
+-2887	,
+-2864	,
+-2841	,
+-2819	,
+-2797	,
+-2775	,
 -2754	,
--2711	,
--2670	,
--2630	,
--2591	,
--2553	,
--2516	,
--2481	,
--2446	,
--2412	,
--2379	,
--2348	,
--2316	,
--2286	,
--2257	,
--2228	,
--2200	,
--2173	,
--2146	,
+-2733	,
+-2712	,
+-2692	,
+-2672	,
+-2652	,
+-2633	,
+-2614	,
+-2595	,
+-2576	,
+-2558	,
+-2540	,
+-2522	,
+-2504	,
+-2487	,
+-2470	,
+-2453	,
+-2436	,
+-2420	,
+-2404	,
+-2388	,
+-2372	,
+-2356	,
+-2341	,
+-2326	,
+-2311	,
+-2296	,
+-2282	,
+-2267	,
+-2253	,
+-2239	,
+-2225	,
+-2211	,
+-2198	,
+-2185	,
+-2171	,
+-2158	,
+-2145	,
+-2133	,
 -2120	,
+-2108	,
 -2095	,
--2070	,
--2046	,
--2022	,
--1999	,
--1976	,
--1954	,
--1933	,
--1912	,
--1891	,
--1871	,
--1851	,
--1832	,
--1813	,
--1794	,
--1776	,
--1758	,
--1741	,
+-2083	,
+-2071	,
+-2059	,
+-2048	,
+-2036	,
+-2025	,
+-2013	,
+-2002	,
+-1991	,
+-1980	,
+-1969	,
+-1958	,
+-1948	,
+-1937	,
+-1927	,
+-1917	,
+-1906	,
+-1896	,
+-1886	,
+-1876	,
+-1867	,
+-1857	,
+-1848	,
+-1838	,
+-1829	,
+-1819	,
+-1810	,
+-1801	,
+-1792	,
+-1783	,
+-1775	,
+-1766	,
+-1757	,
+-1749	,
+-1740	,
+-1732	,
 -1723	,
+-1715	,
 -1707	,
--1690	,
--1674	,
--1658	,
--1643	,
--1627	,
--1612	,
--1598	,
--1583	,
--1569	,
--1555	,
--1541	,
--1528	,
--1515	,
--1502	,
--1489	,
+-1699	,
+-1691	,
+-1683	,
+-1675	,
+-1667	,
+-1660	,
+-1652	,
+-1645	,
+-1637	,
+-1630	,
+-1622	,
+-1615	,
+-1608	,
+-1601	,
+-1594	,
+-1586	,
+-1580	,
+-1573	,
+-1566	,
+-1559	,
+-1552	,
+-1546	,
+-1539	,
+-1532	,
+-1526	,
+-1519	,
+-1513	,
+-1507	,
+-1500	,
+-1494	,
+-1488	,
+-1482	,
 -1476	,
+-1470	,
 -1464	,
+-1458	,
 -1452	,
+-1446	,
 -1440	,
--1428	,
+-1434	,
+-1429	,
+-1423	,
 -1417	,
--1405	,
--1394	,
--1383	,
--1372	,
--1362	,
--1351	,
--1341	,
--1330	,
--1320	,
--1311	,
--1301	,
--1291	,
--1282	,
--1272	,
--1263	,
--1254	,
--1245	,
--1236	,
--1228	,
--1219	,
--1211	,
--1203	,
--1194	,
--1186	,
--1178	,
--1170	,
--1163	,
--1155	,
--1147	,
--1140	,
--1132	,
--1125	,
--1118	,
--1111	,
--1104	,
--1097	,
--1090	,
--1083	,
--1077	,
--1070	,
--1064	,
--1057	,
--1051	,
--1045	,
--1038	,
--1032	,
--1026	,
--1020	,
--1014	,
--1009	,
--1003	,
--997	,
--991	,
--986	,
--980	,
--975	,
--969	,
--964	,
--959	,
--954	,
--948	,
--943	,
--938	,
--933	,
--928	,
--923	,
--919	,
--914	,
--909	,
--904	,
--900	,
--895	,
--891	,
--886	,
--882	,
--877	,
--873	,
--868	,
--864	,
--860	,
--856	,
--852	,
--847	,
--843	,
--839	,
--835	,
--831	,
--827	,
--823	,
--820	,
--816	,
--812	,
--808	,
--805	,
--801	,
--797	,
--794	,
--790	,
--786	,
--783	,
--779	,
--776	,
--773	,
--769	,
--766	,
--763	,
--759	,
--756	,
--753	,
--749	,
--746	,
--743	,
--740	,
--737	,
--734	,
--731	,
--728	,
--725	,
--722	,
--719	,
--716	,
--713	,
--710	,
--707	,
--704	,
--701	,
--699	,
--696	,
--693	,
--690	,
--688	,
--685	,
--682	,
--680	,
--677	,
--674	,
--672	,
--669	,
--667
+-1412	,
+-1406	,
+-1401	,
+-1395	,
+-1390	,
+-1385	,
+-1379	,
+-1374	,
+-1369	,
+-1364	,
+-1359	,
+-1353	,
+-1348	,
+-1343	,
+-1338	,
+-1333
 };
 
 void initMotorState()
 {
     MotorState.phase = 0;
-    MotorState.status = STARTUP;
+    MotorState.status = STANDBY;
+    uint8_t i = 0;
+    for (; i < 16; i++)
+    {
+        MotorState.closedLoopCtrl.rollingCommutationFilter[i] = OpenLoopCommutationTable[255];
+    }
 }
 
 void MotorStateTasks()
@@ -279,21 +284,23 @@ void MotorStateTasks()
                 MotorState.openLoopCtrl.tableIndex = 0;
                 MotorState.commutationTimerVal = OpenLoopCommutationTable[0];
                 reset_commutation_timer(MotorState.commutationTimerVal);
+                start_commutation_timer(true);
             }
             break;
         case STARTUP:
         {
+            /* ramp up openLoopCtrl.tableIndex from 0 to 255, incrementing every 50ms*/
             if (check_event_timer_overflow())
             {
                 static uint8_t accelerationCounter = 0;
-                if (++accelerationCounter > 50)
+                if (++accelerationCounter == 10)
                 {
                     accelerationCounter = 0;
                     MotorState.commutationTimerVal = OpenLoopCommutationTable[++MotorState.openLoopCtrl.tableIndex];
                     if (MotorState.openLoopCtrl.tableIndex == 255)
                     {
                         MotorState.status = CLOSED_LOOP_CTRL;
-                        enable_cmp_interrupt(true);
+                        //enable_cmp_interrupt(true);
                     }
                 }
             }
@@ -317,9 +324,14 @@ void MotorStateTasks()
 
 void recalculate_commutation_time()
 {
-    uint16_t a = (MotorState.commutationTimerVal - MotorState.closedLoopCtrl.newComparatorCaptureData) * 2;
-    uint16_t b = MotorState.commutationTimerVal * 15 + a;
-    MotorState.commutationTimerVal = b >> 4;
+    static int16_t filterSum = 16 * (-1333);
+    uint8_t i = MotorState.closedLoopCtrl.filterIndex;
+    MotorState.closedLoopCtrl.filterIndex = i == 0 ? 15 : i - 1;
+    
+    int16_t x = (MotorState.commutationTimerVal - MotorState.closedLoopCtrl.newComparatorCaptureData) * 2;
+    filterSum += x - MotorState.closedLoopCtrl.rollingCommutationFilter[i];
+    MotorState.closedLoopCtrl.rollingCommutationFilter[i] = x;
+    MotorState.commutationTimerVal = filterSum / 16;
 }
 
 #ifndef CCW_OPERATION
@@ -408,7 +420,7 @@ void commutate()
 {
     switch (MotorState.phase)
     {
-        /* Phase 0: Power phases A/C, B floats */
+        /* Phase 0: Power phases A/C, B floats; comparator on */
         case 0:
         {
             PHASE_A_HIGH();
@@ -416,21 +428,26 @@ void commutate()
             PHASE_B_TRIS();
             PWM_ASSIGN_PHASE_A();
             ACMP_ASSIGN_PHASE_B();
+            if (MotorState.status == CLOSED_LOOP_CTRL)
+            {
+                blank(500);
+                enable_cmp_interrupt(true);
+            }
             MotorState.phase = 5;
         }
         break;
         /* Phase 1: Power phases B/C, A floats */
         case 1:
         {
+            enable_cmp_interrupt(false);
             PHASE_B_HIGH();
             PHASE_C_LOW();
             PHASE_A_TRIS();
             PWM_ASSIGN_PHASE_B();
-            ACMP_ASSIGN_PHASE_A();
             MotorState.phase = 0;
         }
         break;
-        /* Phase 2: Power phases B/A, C floats */
+        /* Phase 2: Power phases B/A, C floats; comparator on */
         case 2:
         {
             PHASE_B_HIGH();
@@ -438,39 +455,49 @@ void commutate()
             PHASE_C_TRIS();
             PWM_ASSIGN_PHASE_B();
             ACMP_ASSIGN_PHASE_C();
+            if (MotorState.status == CLOSED_LOOP_CTRL)
+            {
+                blank(500);
+                enable_cmp_interrupt(true);
+            }
             MotorState.phase = 1;
         }
         break;
         /* Phase 3: Power phases C/A, B floats */
         case 3:
         {
+            enable_cmp_interrupt(false);
             PHASE_C_HIGH();
             PHASE_A_LOW();
             PHASE_B_TRIS();
             PWM_ASSIGN_PHASE_C();
-            ACMP_ASSIGN_PHASE_B();
             MotorState.phase = 2;
         }
         break;
-        /* Phase 4: Power phases C/B, A floats */
+        /* Phase 4: Power phases C/B, A floats; comparator on */
         case 4:
         {
             PHASE_C_HIGH();
-            PHASE_A_LOW();
-            PHASE_B_TRIS();
+            PHASE_B_LOW();
+            PHASE_A_TRIS();
             PWM_ASSIGN_PHASE_C();
             ACMP_ASSIGN_PHASE_A();
+            if (MotorState.status == CLOSED_LOOP_CTRL)
+            {
+                blank(500);
+                enable_cmp_interrupt(true);
+            }
             MotorState.phase = 3;
         }
         break;
         /* Phase 5: Power phases A/B, C floats */
         case 5:
         {
+            enable_cmp_interrupt(false);
             PHASE_A_HIGH();
             PHASE_B_LOW();
             PHASE_C_TRIS();
             PWM_ASSIGN_PHASE_A();
-            ACMP_ASSIGN_PHASE_C();
             MotorState.phase = 4;
         }
         break;

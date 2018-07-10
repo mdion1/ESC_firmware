@@ -59,5 +59,6 @@ void set_PWM(uint8_t val);
 void init_comparator();
 void enable_cmp_interrupt(bool on);
 void init_spi();
+void blank(uint8_t val);
 
 #endif

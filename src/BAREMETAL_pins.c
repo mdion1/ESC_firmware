@@ -44,10 +44,9 @@ void start_commutation_timer(bool on)
 
 void init_event_timer()
 {
-    T4CONbits.T4CKPS = 9;       // 1:10 prescaler
-    T4CONbits.T4OUTPS = 3;      // 1:64 postscaler
-    PR4 = 124;                  //  125-count period
-    T4CONbits.TMR4ON = 1;       //  ==> 100Hz clock
+    T4CONbits.T4OUTPS = 4;      // 1:5 postscaler
+    T4CONbits.T4CKPS = 3;       // 1:64 prescaler
+    T4CONbits.TMR4ON = 1;       //  ==> ~100Hz clock
 }
 
 bool check_event_timer_overflow()
@@ -72,7 +71,8 @@ void init_PWM()
     
     /* Configure Timer2 */
     T2CONbits.TMR2ON = 1;
-    PR2 = 255;                          //
+    T2CONbits.T2OUTPS = 1;              //debugging: try post-scaler of 2
+    PR2 = 255;
 }
 
 void set_PWM(uint8_t val)
@@ -90,6 +90,7 @@ void init_comparator()
 
 void enable_cmp_interrupt(bool on)
 {
+    PIR2bits.C2IF = 0;  //clear flag
     PIE2bits.C2IE = on;
 }
 
@@ -111,4 +112,17 @@ void init_spi()
     SSP1CON1bits.CKP = 0;    //SPI mode 0
     SSP1CON1bits.SSPM = 0b0100;    //SPI slave mode, clock = SCK pin, ~SS pin control enabled
     SSP1CON3bits.BOEN = 1;    //Buffer overwrite enable bit set
+}
+
+void blank(uint8_t val)
+{
+    if (!T1CONbits.TMR1ON)
+        return;
+    
+#define NOW ((TMR1H << 8) | TMR1L)
+    uint16_t start = NOW;
+    while (NOW - start < val)
+    {
+        asm("NOP");
+    }
 }
