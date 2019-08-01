@@ -3,6 +3,8 @@
 
 #include "BAREMETAL_pins.h"
 
+#define COMMUTATION_FILTER_SIZE 32
+
 typedef enum {STANDBY = 0, STARTUP, STALL, OPEN_LOOP_CTRL, CLOSED_LOOP_CTRL}motorStatus_t;
 
 void commutate();
@@ -22,7 +24,7 @@ typedef struct
         bool newComparatorCaptureDataFlag;
         int16_t newComparatorCaptureData;
         uint8_t dutyCycle;
-        int16_t rollingCommutationFilter[16];
+        int16_t rollingCommutationFilter[COMMUTATION_FILTER_SIZE];
         uint8_t filterIndex;
     }closedLoopCtrl;
     /* General parameters */

@@ -267,7 +267,7 @@ void initMotorState()
     MotorState.phase = 0;
     MotorState.status = STANDBY;
     uint8_t i = 0;
-    for (; i < 16; i++)
+    for (; i < COMMUTATION_FILTER_SIZE; i++)
     {
         MotorState.closedLoopCtrl.rollingCommutationFilter[i] = OpenLoopCommutationTable[255];
     }
@@ -293,14 +293,14 @@ void MotorStateTasks()
             if (check_event_timer_overflow())
             {
                 static uint8_t accelerationCounter = 0;
-                if (++accelerationCounter == 10)
+                if (++accelerationCounter == 5)
                 {
                     accelerationCounter = 0;
                     MotorState.commutationTimerVal = OpenLoopCommutationTable[++MotorState.openLoopCtrl.tableIndex];
                     if (MotorState.openLoopCtrl.tableIndex == 255)
                     {
                         MotorState.status = CLOSED_LOOP_CTRL;
-                        //enable_cmp_interrupt(true);
+                        enable_cmp_interrupt(true);
                     }
                 }
             }
@@ -324,14 +324,25 @@ void MotorStateTasks()
 
 void recalculate_commutation_time()
 {
-    static int16_t filterSum = 16 * (-1333);
+    static int32_t filterSum = COMMUTATION_FILTER_SIZE * (-1333);
     uint8_t i = MotorState.closedLoopCtrl.filterIndex;
-    MotorState.closedLoopCtrl.filterIndex = i == 0 ? 15 : i - 1;
-    
     int16_t x = (MotorState.commutationTimerVal - MotorState.closedLoopCtrl.newComparatorCaptureData) * 2;
     filterSum += x - MotorState.closedLoopCtrl.rollingCommutationFilter[i];
     MotorState.closedLoopCtrl.rollingCommutationFilter[i] = x;
-    MotorState.commutationTimerVal = filterSum / 16;
+    MotorState.commutationTimerVal = filterSum / COMMUTATION_FILTER_SIZE;
+    
+//    /*debugging only */
+    MotorState.commutationTimerVal = -1333;
+//    if (MotorState.commutationTimerVal < -1350)
+//    {
+//        MotorState.commutationTimerVal = -1350;
+//    }
+//    if (MotorState.commutationTimerVal > -1310)
+//    {
+//        MotorState.commutationTimerVal = -1310;
+//    }
+    MotorState.closedLoopCtrl.filterIndex++;
+    MotorState.closedLoopCtrl.filterIndex %= COMMUTATION_FILTER_SIZE;
 }
 
 #ifndef CCW_OPERATION
@@ -430,7 +441,7 @@ void commutate()
             ACMP_ASSIGN_PHASE_B();
             if (MotorState.status == CLOSED_LOOP_CTRL)
             {
-                blank(500);
+                blank(100);
                 enable_cmp_interrupt(true);
             }
             MotorState.phase = 5;
@@ -457,7 +468,7 @@ void commutate()
             ACMP_ASSIGN_PHASE_C();
             if (MotorState.status == CLOSED_LOOP_CTRL)
             {
-                blank(500);
+                blank(100);
                 enable_cmp_interrupt(true);
             }
             MotorState.phase = 1;
@@ -484,7 +495,7 @@ void commutate()
             ACMP_ASSIGN_PHASE_A();
             if (MotorState.status == CLOSED_LOOP_CTRL)
             {
-                blank(500);
+                blank(100);
                 enable_cmp_interrupt(true);
             }
             MotorState.phase = 3;

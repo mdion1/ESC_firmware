@@ -71,7 +71,7 @@ void init_PWM()
     
     /* Configure Timer2 */
     T2CONbits.TMR2ON = 1;
-    T2CONbits.T2OUTPS = 1;              //debugging: try post-scaler of 2
+    T2CONbits.T2OUTPS = 0;
     PR2 = 255;
 }
 
