@@ -3,7 +3,7 @@
 
 extern motor_state_t MotorState;
 extern uint16_t OpenLoopCommutationTable[256];
-const int16_t PWM_initial_timer_val = -256;   //timer overflows after 256 counts
+const int16_t PWM_initial_timer_val = 0xff00;   //timer overflows after 256 counts
 
 void init_pins()
 {
@@ -33,46 +33,50 @@ void reset_commutation_timer(int16_t val)
 void start_commutation_timer(bool on)
 {
     FTM2_SC = 1 << 3;           //select system clock, enabling module
-    FTMx_SC |= 1 << 6;          //enable overflow interrupt (TOIE = bit 6)
+    FTM2_SC |= 1 << 6;          //enable overflow interrupt (TOIE = bit 6)
     
 }
 
 void init_event_timer()
 {
-    T4CONbits.T4OUTPS = 4;      // 1:5 postscaler
-    T4CONbits.T4CKPS = 3;       // 1:64 prescaler
-    T4CONbits.TMR4ON = 1;       //  ==> ~100Hz clock
+	//todo
+    //T4CONbits.T4OUTPS = 4;      // 1:5 postscaler
+    //T4CONbits.T4CKPS = 3;       // 1:64 prescaler
+    //T4CONbits.TMR4ON = 1;       //  ==> ~100Hz clock
 }
 
 bool check_event_timer_overflow()
 {
-    if (PIR2bits.TMR4IF)
-    {
-        PIR2bits.TMR4IF = 0;
-        return true;
-    }
+	//todo
+    //if (PIR2bits.TMR4IF)
+    //{
+    //    PIR2bits.TMR4IF = 0;
+    //    return true;
+    //}
     return false;
 }
 
 void init_PWM()
 {
     /* PWM setup */
-    FTM0_CNTIN = (uint16_t)PWM_initial_timer_val;
-    //FTM0_MOD = PWM_initial_timer_val;                 //start with a duty cycle of 0;
-    FTM0_MOD = PWM_initial_timer_val + 32;            //start with a duty cycle of 32 /256;
-    FTM0_C0SC = (1 << 5) | (1 << 3);                  //select edge-aligned PWM, MSB:MSA = 10, ELSB:ELSA = 10
-    FTM0_C1SC = FTM0_C2SC = FTM_C0SC;
     FTM0_SC = 1 << 3;                                 //select system clock, enabling module
+    FTM0_C0SC = (1 << 5) | (1 << 3);                  //select edge-aligned PWM, MSB:MSA = 10, ELSB:ELSA = 10
+    FTM0_C1SC = FTM0_C2SC = FTM0_C0SC;
+    FTM0_CNTIN = 0;
+    FTM0_MOD = 255;
+    FTM0_C0V = FTM0_C1V = FTM0_C2V = 32;              //start with an initial duty cycle of 1/8
 }
 
 void set_PWM(uint8_t val)
 {
-    CCPR1H = (uint16_t)(val + PWM_initial_timer_val);
+	//todo
+    //CCPR1H = (uint16_t)(val + PWM_initial_timer_val);
 }
 
 void init_comparator()
 {
   /* Comparator module CMP0 */
+    SIM_SCGC4 |= 1 << 19;                                     //enable comparoator clock gate control
     CMP0_CR1 |= (1 << 4) | (1 << 1) | (1 << 0);               //high-power mode; output pin enable; module enable
     PORTC_PCR6 = PORTC_PCR7 = PORTC_PCR8 = PORTC_PCR9 = 0;    //Assign (default) comparator input pins
     PORTC_PCR5 = 6 << 8;                                      //assign CMP0_OUT to Teensy pin 13 (port C5)
@@ -80,19 +84,21 @@ void init_comparator()
 
 void enable_cmp_interrupt(bool on)
 {
-    PIR2bits.C2IF = 0;  //clear flag
-    PIE2bits.C2IE = on;
+	//todo
+    //PIR2bits.C2IF = 0;  //clear flag
+    //PIE2bits.C2IE = on;
 }
 
 void blank(uint8_t val)
 {
-    if (!T1CONbits.TMR1ON)
-        return;
-    
-#define NOW ((TMR1H << 8) | TMR1L)
-    uint16_t start = NOW;
-    while (NOW - start < val)
-    {
-        asm("NOP");
-    }
+	//todo
+//    if (!T1CONbits.TMR1ON)
+//        return;
+//    
+//#define NOW ((TMR1H << 8) | TMR1L)
+//    uint16_t start = NOW;
+//    while (NOW - start < val)
+//    {
+//        asm("NOP");
+//    }
 }

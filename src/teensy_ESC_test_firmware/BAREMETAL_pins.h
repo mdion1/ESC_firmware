@@ -1,6 +1,10 @@
 #ifndef _BAREMETAL_PINS_H
 #define _BAREMETAL_PINS_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 #include <stdbool.h>
 #include "Motor_direction.h"
@@ -25,17 +29,17 @@ CMP out = C5 (Teensy pin 13)
 
 */
 
-#define PWM_ASSIGN_PHASE_A()    PORTC_PCR0 = 4 << 8;  \  //Assigns FTM0_CH0 output
-						PORTC_PCR1 = 1 << 8;  \  //Assigns GPIO function
-						PORTC_PCR2 = 1 << 8;      //Assigns GPIO function
+#define PWM_ASSIGN_PHASE_A()    PORTC_PCR1 = 4 << 8;  \
+								PORTC_PCR2 = 1 << 8;  \
+								PORTC_PCR3 = 1 << 8;      //(1) Assigns FTM0_CH0 output; (2) Assigns GPIO function; (3) Assigns GPIO function;
 						
-#define PWM_ASSIGN_PHASE_B()    PORTC_PCR0 = 1 << 8;  \  //Assigns GPIO function
-						PORTC_PCR1 = 4 << 8;  \  //Assigns FTM0_CH1 output
-						PORTC_PCR2 = 1 << 8;     //Assigns GPIO function
+#define PWM_ASSIGN_PHASE_B()    PORTC_PCR1 = 1 << 8;  \
+								PORTC_PCR2 = 4 << 8;  \
+								PORTC_PCR3 = 1 << 8;     //(1) Assigns GPIO function; (2) Assigns FTM0_CH1 output; (3) Assigns GPIO function;
 						
-#define PWM_ASSIGN_PHASE_B()    PORTC_PCR0 = 1 << 8;  \  //Assigns GPIO function
-						PORTC_PCR1 = 1 << 8;  \  //Assigns GPIO function
-						PORTC_PCR2 = 4 << 8;     //Assigns FTM0_CH2 output
+#define PWM_ASSIGN_PHASE_C()    PORTC_PCR1 = 1 << 8;  \
+								PORTC_PCR2 = 1 << 8;  \
+								PORTC_PCR3 = 4 << 8;     //(1) Assigns GPIO function; (2) Assigns GPIO function; (3) Assigns FTM0_CH2 output;
 						
 //todo
 #define PHASE_A_HIGH()    GPIOC_PSOR = 1 << 1; GPIOB_PSOR = 1 << 16;
@@ -64,5 +68,9 @@ void set_PWM(uint8_t val);
 void init_comparator();
 void enable_cmp_interrupt(bool on);
 void blank(uint8_t val);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
