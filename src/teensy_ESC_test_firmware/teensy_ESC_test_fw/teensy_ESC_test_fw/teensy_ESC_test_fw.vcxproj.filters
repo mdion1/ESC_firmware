@@ -21,10 +21,10 @@
     <ClCompile Include="..\..\ESC_logic.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\interrupts.c">
+    <ClCompile Include="..\..\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\main.cpp">
+    <ClCompile Include="..\..\interrupts.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -39,6 +39,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Motor_direction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DMAreg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

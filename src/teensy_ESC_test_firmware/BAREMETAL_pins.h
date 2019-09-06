@@ -9,6 +9,7 @@ extern "C" {
 #include <stdbool.h>
 #include "Motor_direction.h"
 #include <Arduino.h>
+#include "DMAreg.h"
 
 /****************** MCU pinout ******************/
 /*
@@ -29,6 +30,7 @@ CMP out = C5 (Teensy pin 13)
 
 */
 
+/* PWM output manipulation */
 #define PWM_ASSIGN_PHASE_A()    PORTC_PCR1 = 4 << 8;  \
 								PORTC_PCR2 = 1 << 8;  \
 								PORTC_PCR3 = 1 << 8;      //(1) Assigns FTM0_CH0 output; (2) Assigns GPIO function; (3) Assigns GPIO function;
@@ -41,7 +43,7 @@ CMP out = C5 (Teensy pin 13)
 								PORTC_PCR2 = 1 << 8;  \
 								PORTC_PCR3 = 4 << 8;     //(1) Assigns GPIO function; (2) Assigns GPIO function; (3) Assigns FTM0_CH2 output;
 						
-//todo
+/* Gate driver pins */
 #define PHASE_A_HIGH()    GPIOC_PSOR = 1 << 1; GPIOB_PSOR = 1 << 16;
 #define PHASE_A_LOW()     GPIOC_PSOR = 1 << 1; GPIOB_PCOR = 1 << 16;
 #define PHASE_A_TRIS()    GPIOC_PCOR = 1 << 1;
@@ -51,11 +53,17 @@ CMP out = C5 (Teensy pin 13)
 #define PHASE_C_HIGH()    GPIOC_PSOR = 1 << 3; GPIOD_PSOR = 1 << 0;
 #define PHASE_C_LOW()     GPIOC_PSOR = 1 << 3; GPIOD_PCOR = 1 << 0;
 #define PHASE_C_TRIS()    GPIOC_PCOR = 1 << 3;
+#define KILLSWITCH() GPIOC_PCOR = (1 << 3) | (1 << 2) | (1 << 1);
 
+/* Comparator module GPIO manipulation */
 #define ACMP_ASSIGN_PHASE_A() CMP0_MUXCR = 1 << 0;
 #define ACMP_ASSIGN_PHASE_B() CMP0_MUXCR = 2 << 0;
 #define ACMP_ASSIGN_PHASE_C() CMP0_MUXCR = 3 << 0;
-#define KILLSWITCH() GPIOC_PCOR = (1 << 3) | (1 << 2) | (1 << 1);
+#define CLEAR_CMP_FLAG	CMP0_SCR |= 1 << 2;		//clear interrupt flag by writing a 1; Bit 2 = CFR, comparator flag rising
+
+/* commutation timer (FTM1) */
+#define CLEAR_COMMUTATION_TMR_OVF_FLAG() FTM1_SC &= ~(1 << 7);		//clear overflow interrupt flag (TOF = bit 7)
+
 
 void init_pins();
 void init_commutation_timer();
@@ -67,7 +75,6 @@ void init_PWM();
 void set_PWM(uint8_t val);
 void init_comparator();
 void enable_cmp_interrupt(bool on);
-void blank(uint8_t val);
 
 #ifdef __cplusplus
 }

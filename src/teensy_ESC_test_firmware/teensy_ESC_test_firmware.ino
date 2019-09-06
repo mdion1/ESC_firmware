@@ -11,6 +11,7 @@ void setup()
     //initMotorState();
     //init_event_timer();
     //init_commutation_timer();
+	sei();
 }
 
 void loop()

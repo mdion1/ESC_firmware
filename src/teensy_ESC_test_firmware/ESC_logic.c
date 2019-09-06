@@ -370,7 +370,11 @@ void commutate()
             PHASE_A_TRIS();
             PWM_ASSIGN_PHASE_B();
             ACMP_ASSIGN_PHASE_A();
-            enable_cmp_interrupt(true);
+			if (MotorState.status == CLOSED_LOOP_CTRL)
+			{
+				delayMicroseconds(10);
+				enable_cmp_interrupt(true);
+			}
             MotorState.phase = 2;
         }
         break;
@@ -393,7 +397,11 @@ void commutate()
             PHASE_B_TRIS();
             PWM_ASSIGN_PHASE_C();
             ACMP_ASSIGN_PHASE_B();
-            enable_cmp_interrupt(true);
+			if (MotorState.status == CLOSED_LOOP_CTRL)
+			{
+				delayMicroseconds(10);
+				enable_cmp_interrupt(true);
+			}
             MotorState.phase = 4;
         }
         break;
@@ -416,7 +424,11 @@ void commutate()
             PHASE_C_TRIS();
             PWM_ASSIGN_PHASE_A();
             ACMP_ASSIGN_PHASE_C();
-            enable_cmp_interrupt(true);
+			if (MotorState.status == CLOSED_LOOP_CTRL)
+			{
+				delayMicroseconds(10);
+				enable_cmp_interrupt(true);
+			}
             MotorState.phase = 0;
         }
         break;
@@ -441,7 +453,7 @@ void commutate()
             ACMP_ASSIGN_PHASE_B();
             if (MotorState.status == CLOSED_LOOP_CTRL)
             {
-                blank(100);
+                delayMicroseconds(10);
                 enable_cmp_interrupt(true);
             }
             MotorState.phase = 5;
@@ -468,7 +480,7 @@ void commutate()
             ACMP_ASSIGN_PHASE_C();
             if (MotorState.status == CLOSED_LOOP_CTRL)
             {
-                blank(100);
+                delayMicroseconds(10);
                 enable_cmp_interrupt(true);
             }
             MotorState.phase = 1;
@@ -495,7 +507,7 @@ void commutate()
             ACMP_ASSIGN_PHASE_A();
             if (MotorState.status == CLOSED_LOOP_CTRL)
             {
-                blank(100);
+                delayMicroseconds(10);
                 enable_cmp_interrupt(true);
             }
             MotorState.phase = 3;

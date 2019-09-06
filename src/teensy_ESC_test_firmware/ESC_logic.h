@@ -28,7 +28,7 @@ typedef struct
         bool newComparatorCaptureDataFlag;
         int16_t newComparatorCaptureData;
         uint8_t dutyCycle;
-        int16_t rollingCommutationFilter[COMMUTATION_FILTER_SIZE];
+        uint32_t rollingCommutationFilter[COMMUTATION_FILTER_SIZE];
         uint8_t filterIndex;
     }closedLoopCtrl;
     /* General parameters */

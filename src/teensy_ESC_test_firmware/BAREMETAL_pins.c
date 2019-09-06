@@ -2,8 +2,7 @@
 #include "ESC_logic.h"
 
 extern motor_state_t MotorState;
-extern uint16_t OpenLoopCommutationTable[256];
-const int16_t PWM_initial_timer_val = 0xff00;   //timer overflows after 256 counts
+static uint32_t lastEvent;
 
 void init_pins()
 {
@@ -19,41 +18,45 @@ void init_pins()
 
 void init_commutation_timer()
 {
-    /* Flex Timer 2, channel 0, input capture mode setup */
-    FTM2_C0SC |= 1 << 2;                                      // ESLnB:ELSEnA(3:2) = 01 for input capture on rising edge
-    SIM_SOPT4 |= 1 << 20;                                     //set FTM2CH0SRC (input capture source, bits 21:20) to CMP0_OUT
+    /* Flex Timer 1, channel 0, input capture mode setup */
+	FTM1_SC |= 1 << 3;           //select system clock, enabling module
+	FTM1_SC |= 2 << 0;			 //Prescaler = 4:1
+    FTM1_C0SC |= 1 << 2;                                      // ESLnB:ELSEnA(3:2) = 01 for input capture on rising edge
+    SIM_SOPT4 |= 1 << 18;                                     //set FTM1CH0SRC (input capture source, bits 19:18) to CMP0_OUT
+	FTM1_CNTIN = 0;
 }
 
 void reset_commutation_timer(int16_t val)
 {
-    FTM2_CNTIN = (uint16_t)(-val);
-    FTM2_CNT = FTM2_CNTIN;
+	FTM1_MOD = val;
+    FTM1_CNT = 0;			//any write to FTMx_CNT resets value to FTMx_CNTIN
 }
 
 void start_commutation_timer(bool on)
 {
-    FTM2_SC = 1 << 3;           //select system clock, enabling module
-    FTM2_SC |= 1 << 6;          //enable overflow interrupt (TOIE = bit 6)
-    
+	if (on)
+	{
+		CLEAR_COMMUTATION_TMR_OVF_FLAG()
+		FTM1_SC |= 1 << 6;          //enable overflow interrupt (TOIE = bit 6)
+	}
+	else
+		FTM1_SC &= ~(1 << 6);       //disable overflow interrupt
 }
 
 void init_event_timer()
 {
-	//todo
-    //T4CONbits.T4OUTPS = 4;      // 1:5 postscaler
-    //T4CONbits.T4CKPS = 3;       // 1:64 prescaler
-    //T4CONbits.TMR4ON = 1;       //  ==> ~100Hz clock
+	lastEvent = millis();
 }
 
 bool check_event_timer_overflow()
 {
-	//todo
-    //if (PIR2bits.TMR4IF)
-    //{
-    //    PIR2bits.TMR4IF = 0;
-    //    return true;
-    //}
-    return false;
+	if (millis() - lastEvent >= 100)
+	{
+		lastEvent += 100;
+		return true;
+	}
+	else
+		return false;
 }
 
 void init_PWM()
@@ -64,13 +67,12 @@ void init_PWM()
     FTM0_C1SC = FTM0_C2SC = FTM0_C0SC;
     FTM0_CNTIN = 0;
     FTM0_MOD = 255;
-    FTM0_C0V = FTM0_C1V = FTM0_C2V = 32;              //start with an initial duty cycle of 1/8
+    FTM0_C0V = FTM0_C1V = FTM0_C2V = 0;              //start with an initial duty cycle of 0
 }
 
 void set_PWM(uint8_t val)
 {
-	//todo
-    //CCPR1H = (uint16_t)(val + PWM_initial_timer_val);
+	FTM0_C0V = FTM0_C1V = FTM0_C2V = val;
 }
 
 void init_comparator()
@@ -80,25 +82,35 @@ void init_comparator()
     CMP0_CR1 |= (1 << 4) | (1 << 1) | (1 << 0);               //high-power mode; output pin enable; module enable
     PORTC_PCR6 = PORTC_PCR7 = PORTC_PCR8 = PORTC_PCR9 = 0;    //Assign (default) comparator input pins
     PORTC_PCR5 = 6 << 8;                                      //assign CMP0_OUT to Teensy pin 13 (port C5)
+
+	/* DMA transfer setup */
+	SIM_SCGC7 |= SIM_SCGC7_DMA;                             //enables clock gate to DMA module
+	SIM_SCGC6 |= SIM_SCGC6_DMAMUX;                          //enables clock gate to DMA Mux module
+	CMP0_SCR |= 1 << 6;										//(bit 6 = DMAEN, DMA enable)
+	TCD_t * mTCD = &DMA_TCD0_SADD;
+	mTCD->SADDR = &FTM1_CNT;									//commutation timer count reg = DMA tranfser source
+	mTCD->SOFF = 0;											//source address does not increment
+	mTCD->ATTR_SRC = DMA_TCD_ATTR_SIZE_16BIT;
+	mTCD->ATTR_DST = DMA_TCD_ATTR_SIZE_16BIT;
+	mTCD->NBYTES_MLNO = mTCD->NBYTES_MLNO = 2;				//2 bytes per minor loop
+	mTCD->SLAST = 0;
+	mTCD->DADDR = &MotorState.closedLoopCtrl.newComparatorCaptureData;	//DMA transfer destination
+	mTCD->DOFF = 0;											//destination address does not increment
+	mTCD->DLASTSGA = 0;
+	mTCD->BITER = mTCD->CITER = 0;
+	mTCD->CSR = 0;
+
+	DMAMUX_CHCFG0 = (1 << 7) | (1 << 0);					//enables DMA ch0, specifies CMP0 as trigger source
+	DMA_ERQ |= 1 << 0;                                      //enable request register
 }
 
 void enable_cmp_interrupt(bool on)
 {
-	//todo
-    //PIR2bits.C2IF = 0;  //clear flag
-    //PIE2bits.C2IE = on;
-}
-
-void blank(uint8_t val)
-{
-	//todo
-//    if (!T1CONbits.TMR1ON)
-//        return;
-//    
-//#define NOW ((TMR1H << 8) | TMR1L)
-//    uint16_t start = NOW;
-//    while (NOW - start < val)
-//    {
-//        asm("NOP");
-//    }
+	if (on)
+	{
+		CLEAR_CMP_FLAG()
+		CMP0_SCR |= 1 << 4;			//(bit 4 = IER, interrupt enable rising)
+	}
+	else
+		CMP0_SCR &= ~(1 << 4);
 }
