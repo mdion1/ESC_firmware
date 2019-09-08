@@ -1,5 +1,6 @@
 #include "BAREMETAL_pins.h"
 #include "ESC_logic.h"
+#include <Arduino.h>
 
 extern motor_state_t MotorState;
 static uint32_t lastEvent;
@@ -83,12 +84,13 @@ void init_comparator()
     PORTC_PCR6 = PORTC_PCR7 = PORTC_PCR8 = PORTC_PCR9 = 0;    //Assign (default) comparator input pins
     PORTC_PCR5 = 6 << 8;                                      //assign CMP0_OUT to Teensy pin 13 (port C5)
 
+#ifdef USE_DMA_CHANNEL
 	/* DMA transfer setup */
 	SIM_SCGC7 |= SIM_SCGC7_DMA;                             //enables clock gate to DMA module
 	SIM_SCGC6 |= SIM_SCGC6_DMAMUX;                          //enables clock gate to DMA Mux module
 	CMP0_SCR |= 1 << 6;										//(bit 6 = DMAEN, DMA enable)
 	TCD_t * mTCD = &DMA_TCD0_SADD;
-	mTCD->SADDR = &FTM1_CNT;									//commutation timer count reg = DMA tranfser source
+	mTCD->SADDR = &FTM1_C0V;									//commutation timer count reg = DMA tranfser source
 	mTCD->SOFF = 0;											//source address does not increment
 	mTCD->ATTR_SRC = DMA_TCD_ATTR_SIZE_16BIT;
 	mTCD->ATTR_DST = DMA_TCD_ATTR_SIZE_16BIT;
@@ -100,8 +102,9 @@ void init_comparator()
 	mTCD->BITER = mTCD->CITER = 0;
 	mTCD->CSR = 0;
 
-	DMAMUX_CHCFG0 = (1 << 7) | (1 << 0);					//enables DMA ch0, specifies CMP0 as trigger source
+	DMAMUX_CHCFG0 = (1 << 7) | (42 << 0);					//enables DMA ch0, specifies CMP0 as trigger source
 	DMA_ERQ |= 1 << 0;                                      //enable request register
+#endif
 }
 
 void enable_cmp_interrupt(bool on)

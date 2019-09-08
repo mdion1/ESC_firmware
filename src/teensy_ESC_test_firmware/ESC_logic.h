@@ -1,11 +1,11 @@
 #ifndef _ESC_LOGIC
 #define _ESC_LOGIC
 
+#include "BAREMETAL_pins.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "BAREMETAL_pins.h"
 
 #define COMMUTATION_FILTER_SIZE 32
 

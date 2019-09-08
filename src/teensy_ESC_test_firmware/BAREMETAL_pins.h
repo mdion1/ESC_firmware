@@ -1,15 +1,15 @@
 #ifndef _BAREMETAL_PINS_H
 #define _BAREMETAL_PINS_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <stdint.h>
 #include <stdbool.h>
 #include "Motor_direction.h"
 #include <Arduino.h>
 #include "DMAreg.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /****************** MCU pinout ******************/
 /*
@@ -59,7 +59,7 @@ CMP out = C5 (Teensy pin 13)
 #define ACMP_ASSIGN_PHASE_A() CMP0_MUXCR = 1 << 0;
 #define ACMP_ASSIGN_PHASE_B() CMP0_MUXCR = 2 << 0;
 #define ACMP_ASSIGN_PHASE_C() CMP0_MUXCR = 3 << 0;
-#define CLEAR_CMP_FLAG	CMP0_SCR |= 1 << 2;		//clear interrupt flag by writing a 1; Bit 2 = CFR, comparator flag rising
+#define CLEAR_CMP_FLAG()	CMP0_SCR |= 1 << 2;		//clear interrupt flag by writing a 1; Bit 2 = CFR, comparator flag rising
 
 /* commutation timer (FTM1) */
 #define CLEAR_COMMUTATION_TMR_OVF_FLAG() FTM1_SC &= ~(1 << 7);		//clear overflow interrupt flag (TOF = bit 7)
