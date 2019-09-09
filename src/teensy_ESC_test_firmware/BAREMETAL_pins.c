@@ -22,9 +22,10 @@ void init_commutation_timer()
     /* Flex Timer 1, channel 0, input capture mode setup */
 	FTM1_SC |= 1 << 3;           //select system clock, enabling module
 	FTM1_SC |= 2 << 0;			 //Prescaler = 4:1
-    FTM1_C0SC |= 1 << 2;                                      // ESLnB:ELSEnA(3:2) = 01 for input capture on rising edge
+    FTM1_C0SC = 1 << 2;                                      // ESLnB:ELSEnA(3:2) = 01 for input capture on rising edge
     SIM_SOPT4 |= 1 << 18;                                     //set FTM1CH0SRC (input capture source, bits 19:18) to CMP0_OUT
 	FTM1_CNTIN = 0;
+ NVIC_ENABLE_IRQ(IRQ_FTM1);
 }
 
 void reset_commutation_timer(int16_t val)
@@ -83,6 +84,7 @@ void init_comparator()
     CMP0_CR1 |= (1 << 4) | (1 << 1) | (1 << 0);               //high-power mode; output pin enable; module enable
     PORTC_PCR6 = PORTC_PCR7 = PORTC_PCR8 = PORTC_PCR9 = 0;    //Assign (default) comparator input pins
     PORTC_PCR5 = 6 << 8;                                      //assign CMP0_OUT to Teensy pin 13 (port C5)
+    NVIC_ENABLE_IRQ(IRQ_CMP0);
 
 #ifdef USE_DMA_CHANNEL
 	/* DMA transfer setup */
