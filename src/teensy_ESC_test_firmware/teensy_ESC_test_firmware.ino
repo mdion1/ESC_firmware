@@ -1,28 +1,24 @@
 #include "BAREMETAL_pins.h"
+#include "ESC_logic.h"
 
 bool debuggingBit = false;
+extern motor_state_t MotorState;
 
 void setup()
 {
     Serial.begin(9600);
     init_pins();
     init_PWM();
-	set_PWM(64);
-    PWM_ASSIGN_PHASE_A()
     init_comparator();
-    ACMP_ASSIGN_PHASE_A()
-    //initMotorState();
-    //init_event_timer();
+    initMotorState();
     init_commutation_timer();
-	reset_commutation_timer(-16384);
-	start_commutation_timer(true);
-	sei();
+	  sei();
 }
 
 void loop()
 {
   checkSerial();
-  //MotorStateTasks();
+  MotorStateTasks();
 }
 
 void checkSerial()
@@ -34,11 +30,23 @@ void checkSerial()
       case 'a':
       {
         Serial.println("hello");
-        Serial.println(CMP0_CR1);
       }
       break;
       case 'b':
 		debuggingBit = true;
+      break;
+      case '1':
+      {
+        set_PWM(MotorState.closedLoopCtrl.dutyCycle = 40);
+        init_event_timer();
+      }
+      break;
+      case '0':
+      {
+        set_PWM(MotorState.closedLoopCtrl.dutyCycle = 0);
+        KILLSWITCH();
+        MotorState.status = STANDBY;
+      }
       break;
       default:
       break;

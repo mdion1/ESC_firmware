@@ -7,10 +7,6 @@
 #include <Arduino.h>
 #include "DMAreg.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /****************** MCU pinout ******************/
 /*
 Motor commutation pins
@@ -75,9 +71,5 @@ void init_PWM();
 void set_PWM(uint8_t val);
 void init_comparator();
 void enable_cmp_interrupt(bool on);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif
