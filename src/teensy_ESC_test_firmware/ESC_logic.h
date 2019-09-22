@@ -4,7 +4,7 @@
 #include "BAREMETAL_pins.h"
 #include <Arduino.h>
 
-#define COMMUTATION_FILTER_SIZE 32
+#define COMMUTATION_FILTER_SIZE 1
 
 typedef enum {STANDBY = 0, STARTUP, STALL, OPEN_LOOP_CTRL, CLOSED_LOOP_CTRL}motorStatus_t;
 
@@ -18,15 +18,17 @@ typedef struct
     /* Open loop control parameters*/
     struct
     {
-        uint8_t tableIndex;
+        uint16_t tableIndex;
     }openLoopCtrl;
     /* Closed loop control parameters */
     struct    {
         bool newComparatorCaptureDataFlag;
+        bool ISR_triggered;
         int16_t newComparatorCaptureData;
         uint8_t dutyCycle;
         uint32_t rollingCommutationFilter[COMMUTATION_FILTER_SIZE];
         uint8_t filterIndex;
+        uint32_t filterSum;
     }closedLoopCtrl;
     /* General parameters */
     uint8_t phase;

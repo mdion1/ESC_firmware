@@ -15,6 +15,11 @@ void init_pins()
     GPIOC_PDDR |= (1 << 2);     //Teensy pin 23 (C2) = B_on/off
     GPIOC_PDDR |= (1 << 3);     //Teensy pin 9 (C3) = C_on/off
     GPIOC_PDDR |= (1 << 6);     //Teensy pin 11 (C6) = CMP0_out
+
+    /* Debugging pin(s) */
+    PORTD_PCR1 = 1 << 8;        //Teensy pin 14 (D1), set as GPIO
+    GPIOD_PDDR |= 1 << 1;       //Teensy pin 14 (D1), set as output
+    DEBUG_PIN_14_LOW()
 }
 
 void init_commutation_timer()
