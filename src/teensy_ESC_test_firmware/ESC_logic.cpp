@@ -1,4 +1,5 @@
 #include "ESC_logic.h"
+#include "filter.h"
 
 motor_state_t MotorState;  
 
@@ -519,6 +520,8 @@ int16_t OpenLoopCommutationTable[512] =
 };
 
 extern bool debuggingBit;
+extern filter * mFilt;
+
 #define LAST_COMMUTATION_TABLE_INDEX 140
 void initMotorState()
 {
@@ -562,8 +565,6 @@ void MotorStateTasks()
                         //MotorState.status = CLOSED_LOOP_CTRL;
                         //enable_cmp_interrupt(true);
                     }
-                    else
-                      Serial.println(MotorState.commutationTimerVal); //debugging only
                 }
             }
         }
@@ -586,16 +587,26 @@ void MotorStateTasks()
 
 void recalculate_commutation_time()
 {
-    uint8_t i = MotorState.closedLoopCtrl.filterIndex;
+    /*uint8_t i = MotorState.closedLoopCtrl.filterIndex;
     int16_t x = MotorState.closedLoopCtrl.newComparatorCaptureData * 2;
     MotorState.closedLoopCtrl.filterSum += x - MotorState.closedLoopCtrl.rollingCommutationFilter[i];
-    MotorState.closedLoopCtrl.rollingCommutationFilter[i] = x;
-    
-    //MotorState.commutationTimerVal = filterSum / COMMUTATION_FILTER_SIZE;
-    if (MotorState.closedLoopCtrl.filterSum / COMMUTATION_FILTER_SIZE > MotorState.commutationTimerVal)
+    MotorState.closedLoopCtrl.rollingCommutationFilter[i] = x;*/
+
+    static int x_prev = MotorState.closedLoopCtrl.newComparatorCaptureData;
+    int x = MotorState.closedLoopCtrl.newComparatorCaptureData;
+    mFilt->push(x - x_prev);
+    /* if midpoint crossing time is > half the commutation time, increment timer */
+    if (x > (MotorState.commutationTimerVal / 2))
       MotorState.commutationTimerVal++;
-    else if (MotorState.closedLoopCtrl.filterSum / COMMUTATION_FILTER_SIZE < MotorState.commutationTimerVal)
+    /* if midpoint crossing time is < 1/4 the commutation time, decrement timer */
+    else if (x < (MotorState.commutationTimerVal / 8) || x < 64)
       MotorState.commutationTimerVal--;
+    /* if the midpoint crossing time is increasing rapidly, increment timer */
+    else if (mFilt->getAvg() > 20)
+      MotorState.commutationTimerVal++;
+    /* if the midpoint crossing time is decreasing rapidly, decrement timer */
+    //else if (mFilt->getAvg() < -20)
+    //  MotorState.commutationTimerVal++;
     
 //    /*debugging only */
 //    MotorState.commutationTimerVal = -1333;
@@ -607,22 +618,23 @@ void recalculate_commutation_time()
 //    {
 //        MotorState.commutationTimerVal = -1310;
 //    }
-    MotorState.closedLoopCtrl.filterIndex++;
+    /*MotorState.closedLoopCtrl.filterIndex++;
     MotorState.closedLoopCtrl.filterIndex %= COMMUTATION_FILTER_SIZE;
-
-    /*if (debuggingBit)
+*/
+    if (debuggingBit)
     {
       static int count = 0;
-      if (count < 100)
+      if (count < 150)
         count++;
       else
       {
         Serial.println("debugging bit off");
         debuggingBit = false;
+        count = 0;
       }
         
-      Serial.println(MotorState.commutationTimerVal);
-    }*/
+      Serial.print(MotorState.commutationTimerVal);Serial.print('\t');Serial.println(x);
+    }
 }
 
 #ifndef CCW_OPERATION

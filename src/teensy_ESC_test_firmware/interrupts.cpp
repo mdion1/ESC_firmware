@@ -29,7 +29,7 @@ void ftm1_isr(void) {
   }
 	
 
-    if (debuggingBit && MotorState.status == CLOSED_LOOP_CTRL)
+    /*if (debuggingBit && MotorState.status == CLOSED_LOOP_CTRL)
     {
       
       static int count = 0;
@@ -45,7 +45,7 @@ void ftm1_isr(void) {
         Serial.println(MotorState.commutationTimerVal);
       if (Comparator_trig_missed)
         Serial.println("trig missed");
-    }
+    }*/
   
 	sei();
 }
