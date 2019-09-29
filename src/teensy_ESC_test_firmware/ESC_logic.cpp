@@ -598,7 +598,7 @@ void recalculate_commutation_time()
     int x = MotorState.closedLoopCtrl.newComparatorCaptureData;
     mFilt->push(x - x_prev);
     x_prev = x;
-    
+
     /* if midpoint crossing time is > half the commutation time, increment timer */
     if (x > (MotorState.commutationTimerVal / 2))
       MotorState.commutationTimerVal++;
@@ -606,11 +606,11 @@ void recalculate_commutation_time()
     else if (x < (MotorState.commutationTimerVal / 8) || x < 64)
       MotorState.commutationTimerVal--;
     /* if the midpoint crossing time is increasing rapidly, increment timer */
-    else if (mFilt->getAvg() > 20)
+    else if (mFilt->getAvg() > 5)
       MotorState.commutationTimerVal++;
     /* if the midpoint crossing time is decreasing rapidly, decrement timer */
-    //else if (mFilt->getAvg() < -20)
-    //  MotorState.commutationTimerVal++;
+    else if (mFilt->getAvg() < -5)
+      MotorState.commutationTimerVal--;
     
 //    /*debugging only */
 //    MotorState.commutationTimerVal = -1333;

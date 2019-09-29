@@ -17,8 +17,8 @@ void setup()
     initMotorState();
     init_commutation_timer();
 	  sei();
-    mFilt = new filter(4);
-    mDebugBuf = new debugging_buf(150);
+    mFilt = new filter(8);
+    mDebugBuf = new debugging_buf(1000);
 }
 
 void loop()
