@@ -26,6 +26,10 @@ void ftm1_isr(void) {
   {
     MotorState.closedLoopCtrl.newComparatorCaptureDataFlag = true;
     MotorState.closedLoopCtrl.newComparatorCaptureData = MotorState.commutationTimerVal;
+    enable_cmp_interrupt(false);
+    
+    DEBUG_PIN_14_HIGH()
+    debuggingBit = true;
   }
 	
 

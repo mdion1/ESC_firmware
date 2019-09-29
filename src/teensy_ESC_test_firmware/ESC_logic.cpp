@@ -1,5 +1,6 @@
 #include "ESC_logic.h"
 #include "filter.h"
+#include "debugging_buf.h"
 
 motor_state_t MotorState;  
 
@@ -521,6 +522,7 @@ int16_t OpenLoopCommutationTable[512] =
 
 extern bool debuggingBit;
 extern filter * mFilt;
+extern debugging_buf * mDebugBuf;
 
 #define LAST_COMMUTATION_TABLE_INDEX 140
 void initMotorState()
@@ -595,6 +597,8 @@ void recalculate_commutation_time()
     static int x_prev = MotorState.closedLoopCtrl.newComparatorCaptureData;
     int x = MotorState.closedLoopCtrl.newComparatorCaptureData;
     mFilt->push(x - x_prev);
+    x_prev = x;
+    
     /* if midpoint crossing time is > half the commutation time, increment timer */
     if (x > (MotorState.commutationTimerVal / 2))
       MotorState.commutationTimerVal++;
@@ -621,9 +625,10 @@ void recalculate_commutation_time()
     /*MotorState.closedLoopCtrl.filterIndex++;
     MotorState.closedLoopCtrl.filterIndex %= COMMUTATION_FILTER_SIZE;
 */
+    mDebugBuf->push(x, MotorState.commutationTimerVal);
     if (debuggingBit)
     {
-      static int count = 0;
+      /* int count = 0;
       if (count < 150)
         count++;
       else
@@ -633,7 +638,10 @@ void recalculate_commutation_time()
         count = 0;
       }
         
-      Serial.print(MotorState.commutationTimerVal);Serial.print('\t');Serial.println(x);
+      Serial.print(MotorState.commutationTimerVal);Serial.print('\t');Serial.println(x);*/
+      mDebugBuf->printAll();
+      Serial.println("----");
+      debuggingBit = false;
     }
 }
 

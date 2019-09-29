@@ -1,10 +1,12 @@
 #include "BAREMETAL_pins.h"
 #include "ESC_logic.h"
 #include "filter.h"
+#include "debugging_buf.h"
 
 bool debuggingBit = false;
 extern motor_state_t MotorState;
 filter * mFilt;
+debugging_buf * mDebugBuf;
 
 void setup()
 {
@@ -16,17 +18,19 @@ void setup()
     init_commutation_timer();
 	  sei();
     mFilt = new filter(4);
+    mDebugBuf = new debugging_buf(150);
 }
 
 void loop()
 {
   checkSerial();
   MotorStateTasks();
+  DEBUG_PIN_14_LOW()
 }
 
 void checkSerial()
 {
-  if (Serial.available())
+  while (Serial.available())
   {
     switch (Serial.read())
     {
@@ -36,8 +40,8 @@ void checkSerial()
       }
       break;
       case 'b':
-		debuggingBit = true;
-    Serial.println("debugging bit on");
+		    debuggingBit = true;
+        Serial.println("debugging bit on");
       break;
       case '2':
       {
