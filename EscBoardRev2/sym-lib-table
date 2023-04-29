@@ -1,0 +1,5 @@
+(sym_lib_table
+  (lib (name "user")(type "KiCad")(uri "${KIPRJMOD}/user.kicad_sym")(options "")(descr ""))
+  (lib (name "DRV8300N")(type "KiCad")(uri "${KIPRJMOD}/ImportedComponents/DRV8300NPWR.kicad_sym")(options "")(descr ""))
+  (lib (name "AdmiralInstrLib")(type "KiCad")(uri "${KIPRJMOD}/ImportedComponents/AdmiralInstrumentsLib.kicad_sym")(options "")(descr ""))
+)
