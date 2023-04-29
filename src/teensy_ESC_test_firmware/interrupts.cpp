@@ -9,46 +9,60 @@ extern bool debuggingBit;
 void ftm1_isr(void) {
 	cli();
 	CLEAR_COMMUTATION_TMR_OVF_FLAG()
-	//debugging only commutate();
+  commutate();
+  bool Comparator_trig_missed = false;
+  if (MotorState.status == CLOSED_LOOP_CTRL && !(MotorState.phase & 1))
+  {
+    if (MotorState.closedLoopCtrl.ISR_triggered)
+    {
+      MotorState.closedLoopCtrl.ISR_triggered = false;
+    }
+    else
+      Comparator_trig_missed = true;
+  }
+  reset_commutation_timer(MotorState.commutationTimerVal);
 
-	/* debugging/testing */
-	static int count = 0;
-	if (debuggingBit)
-	{
-		Serial.println("FTM1 ovf");
-		if (count++ >= 10)
-		{
-			debuggingBit = false;
-			count = 0;
-		}
-	}
-	/*******************/
+  if (Comparator_trig_missed)
+  {
+    MotorState.closedLoopCtrl.newComparatorCaptureDataFlag = true;
+    MotorState.closedLoopCtrl.newComparatorCaptureData = MotorState.commutationTimerVal;
+    enable_cmp_interrupt(false);
+    
+    DEBUG_PIN_14_HIGH()
+    debuggingBit = true;
+  }
+	
 
+    /*if (debuggingBit && MotorState.status == CLOSED_LOOP_CTRL)
+    {
+      
+      static int count = 0;
+      if (count < 300)
+        count++;
+      else
+      {
+        Serial.println("debugging bit off");
+        debuggingBit = false;
+        count = 0;
+      }
+      if (count % 2)
+        Serial.println(MotorState.commutationTimerVal);
+      if (Comparator_trig_missed)
+        Serial.println("trig missed");
+    }*/
+  
 	sei();
 }
 
 void cmp0_isr(void) {
 	cli();
+  
 	CLEAR_CMP_FLAG()
 	//debugging only reset_commutation_timer(MotorState.commutationTimerVal / 2);                    //reset commutation timer to 1/2 * commutation time
+  MotorState.closedLoopCtrl.ISR_triggered = true;
 	MotorState.closedLoopCtrl.newComparatorCaptureDataFlag = true;
-#ifndef USE_DMA_CHANNEL
 	MotorState.closedLoopCtrl.newComparatorCaptureData = FTM1_C0V;
-#endif
 	enable_cmp_interrupt(false);
-
-	/* debugging/testing */
-	static int count = 0;
-	if (debuggingBit)
-	{
-		Serial.println(FTM1_C0V);
-		Serial.println(MotorState.closedLoopCtrl.newComparatorCaptureData);
-		if (count++ >= 10)
-		{
-			debuggingBit = false;
-			count = 0;
-		}
-	}
-	/*******************/
+  
 	sei();
 }

@@ -88,7 +88,7 @@ void init_comparator()
     CM2CON1bits.C2INTN = 1;   //enable interrupt on falling edge
     
     /* debugging only: enable comparator output at C4 (pin 6) */
-    RC4PPS = 0b10111;
+    //RC4PPS = 0b10111;
     ANSELCbits.ANSC4 = 0;
     TRISCbits.TRISC4 = 0;
     

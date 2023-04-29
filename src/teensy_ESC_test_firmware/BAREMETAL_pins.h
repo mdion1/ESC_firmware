@@ -7,10 +7,6 @@
 #include <Arduino.h>
 #include "DMAreg.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /****************** MCU pinout ******************/
 /*
 Motor commutation pins
@@ -28,7 +24,14 @@ In_B = C8 (Teensy pin 28)
 In_C = C9 (Teensy pin 27)
 CMP out = C5 (Teensy pin 13)
 
+Debugging pins
+D1 (Teensy pin 14)
+
 */
+
+/* Debugging pins */
+#define DEBUG_PIN_14_HIGH() GPIOD_PSOR = 1 << 1;
+#define DEBUG_PIN_14_LOW()  GPIOD_PCOR = 1 << 1;
 
 /* PWM output manipulation */
 #define PWM_ASSIGN_PHASE_A()    PORTC_PCR1 = 4 << 8;  \
@@ -75,9 +78,5 @@ void init_PWM();
 void set_PWM(uint8_t val);
 void init_comparator();
 void enable_cmp_interrupt(bool on);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

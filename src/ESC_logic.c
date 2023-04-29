@@ -300,6 +300,7 @@ void MotorStateTasks()
                     if (MotorState.openLoopCtrl.tableIndex == 255)
                     {
                         MotorState.status = CLOSED_LOOP_CTRL;
+                        RC4PPS = 0b10111;//debugging only; cmp output pin only turns on during closed loop ctrl
                         enable_cmp_interrupt(true);
                     }
                 }
@@ -329,10 +330,10 @@ void recalculate_commutation_time()
     int16_t x = (MotorState.commutationTimerVal - MotorState.closedLoopCtrl.newComparatorCaptureData) * 2;
     filterSum += x - MotorState.closedLoopCtrl.rollingCommutationFilter[i];
     MotorState.closedLoopCtrl.rollingCommutationFilter[i] = x;
-    MotorState.commutationTimerVal = filterSum / COMMUTATION_FILTER_SIZE;
-    
-//    /*debugging only */
+    //MotorState.commutationTimerVal = filterSum / COMMUTATION_FILTER_SIZE;
     MotorState.commutationTimerVal = -1333;
+    
+//    /*debugging only */ 
 //    if (MotorState.commutationTimerVal < -1350)
 //    {
 //        MotorState.commutationTimerVal = -1350;
